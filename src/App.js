@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 
 function prettyTime(time) {
@@ -24,63 +24,57 @@ function prettyTime(time) {
   return `${hours} hours ${minutes} minutes ${seconds} seconds ${milliseconds} milliseconds`;
 }
 
+const updateInterval = 25
+
 class Stopwatch extends Component {
   constructor(props) {
     super(props);
     this.state = {
       time: 0,
-      ticker: null,
+      // ticker: null,
       running: false,
     };
   }
 
-  tick() {
-    this.setState((state) => ({time: state.time + 25}));
+  tick = () => {
+    this.setState((state) => ({time: state.time + updateInterval}));
   }
 
-  start() {
+  start = () => {
     // set interval for every 10 ms since React can't update fast enough
-    const ticker = setInterval(() => this.tick(), 25);
+    this.ticker = setInterval(this.tick, updateInterval);
     this.setState({
-      ticker: ticker,
       running: true,
     });
   }
 
-  pause() {
-    clearInterval(this.state.ticker);
+  pause = () => {
+    clearInterval(this.ticker);
     this.setState({
-      ticker: null,
       running: false,
     });
   }
 
-  reset() {
-    clearInterval(this.state.ticker);
+  reset = () => {
+    clearInterval(this.ticker);
     this.setState({
       time: 0,
-      ticker: null,
       running: false,
     });
   }
 
   componentWillUnmount() {
-    clearInterval(this.state.ticker)
+    clearInterval(this.ticker)
   }
 
   render() {
-    let buttonText = "Start";
-    let buttonFunc = () => this.start();
-    if (this.state.running) {
-      buttonText = "Pause"
-      buttonFunc = () => this.pause();
-    }
-
     return (
       <div>
         <h2>{prettyTime(this.state.time)}</h2>
-        <button onClick={buttonFunc}>{buttonText}</button>
-        <button onClick={() => this.reset()}>Reset</button>
+        <button onClick={this.state.running ? this.pause : this.start}>
+          {this.state.running ? 'Pause' : 'Start'}
+        </button>
+        <button onClick={this.reset}>Reset</button>
       </div>
     );
   };
@@ -92,10 +86,10 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          {/* <img src={logo} className="App-logo" alt="logo" /> */}
           <h1 className="App-title">My Stopwatch</h1>
         </header>
-        <div className="App-intro" id="stopwatch">
+        <div className="App-intro">
           <Stopwatch />
         </div>
       </div>
